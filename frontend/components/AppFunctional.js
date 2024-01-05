@@ -7,15 +7,23 @@ const initialSteps = 0;
 const initialIndex = 4; // the index the "B" is at
 
 export default function AppFunctional(props) {
-  // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
-  // You can delete them and build your own logic from scratch.
-
   function getXY() {
     let index = -1;
     const find_B = (sq, idx) => (index = sq.innerHTML === "B" ? idx : index);
     const squares = document.querySelectorAll("#grid .square");
     squares.forEach((square, idx) => find_B(square, idx));
     return index;
+  }
+
+  const getNextLeft = (idx) => ([0, 3, 6].includes(idx) ? idx : idx - 1);
+  const getNextUp = (idx) => (idx < 3 ? idx : idx - 3);
+  const getNextRight = (idx) => ([2, 5, 8].includes(idx) ? idx : idx + 1);
+  const getNextDown = (idx) => (idx > 5 ? idx : idx + 3);
+  function getNextIndex(direction) {
+    if (direction === "left") return getNextLeft(getXY());
+    if (direction === "up") return getNextUp(getXY());
+    if (direction === "right") return getNextRight(getXY());
+    if (direction === "down") return getNextDown(getXY());
   }
 
   function getXYMessage() {
@@ -28,16 +36,15 @@ export default function AppFunctional(props) {
     // Use this helper to reset all states to their initial values.
   }
 
-  function getNextIndex(direction) {
-    // This helper takes a direction ("left", "up", etc) and calculates what the next index
-    // of the "B" would be. If the move is impossible because we are at the edge of the grid,
-    // this helper should return the current index unchanged.
-  }
-
   function move(evt) {
     // This event handler can use the helper above to obtain a new index for the "B",
     // and change any states accordingly.
-    console.log(getXY());
+    const currentIndex = getXY();
+    const nextIndex = getNextIndex(evt.target.id);
+
+    const squares = document.querySelectorAll("#grid .square");
+    squares[currentIndex].innerHTML = "";
+    squares[nextIndex].innerHTML = "B";
   }
 
   function onChange(evt) {
@@ -65,12 +72,11 @@ export default function AppFunctional(props) {
         <h3 id="message"></h3>
       </div>
       <div id="keypad">
-        <button id="left" onClick={move}>
-          LEFT
-        </button>
-        <button id="up">UP</button>
-        <button id="right">RIGHT</button>
-        <button id="down">DOWN</button>
+        {["left", "up", "right", "down"].map((direction) => (
+          <button key={direction} id={direction} onClick={move}>
+            {direction.toUpperCase()}
+          </button>
+        ))}
         <button id="reset">reset</button>
       </div>
       <form>
