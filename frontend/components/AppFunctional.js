@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // Suggested initial states
 const initialMessage = "";
@@ -7,18 +7,14 @@ const initialSteps = 0;
 const initialIndex = 4; // the index the "B" is at
 
 export default function AppFunctional(props) {
+  const [message, setMessage] = useState(initialMessage);
+
   function getXY() {
     let index = -1;
     const find_B = (sq, idx) => (index = sq.innerHTML === "B" ? idx : index);
     const squares = document.querySelectorAll("#grid .square");
     squares.forEach((square, idx) => find_B(square, idx));
     return index;
-  }
-
-  function getXYMessage() {
-    // It it not necessary to have a state to track the "Coordinates (2, 2)" message for the user.
-    // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
-    // returns the fully constructed string.
   }
 
   function getNextIndex(direction) {
@@ -34,17 +30,12 @@ export default function AppFunctional(props) {
     squares.forEach((sq, idx) =>
       idx === initialIndex ? setSquare(sq, true) : setSquare(sq)
     );
-    setMessage();
+    setMessage(initialMessage);
   }
 
   function setSquare(sq, set = false) {
     sq.innerHTML = set ? "B" : "";
     set ? sq.classList.add("active") : sq.classList.remove("active");
-  }
-
-  function setMessage(message) {
-    if (message) document.querySelector("#message").innerHTML = message;
-    else document.querySelector("#message").innerHTML = initialMessage;
   }
 
   function setInfoCoordinates() {
@@ -63,7 +54,7 @@ export default function AppFunctional(props) {
       setSquare(squares[getXY()], false);
       setSquare(squares[nextIndex], true);
       setInfoCoordinates();
-      setMessage();
+      setMessage(initialMessage);
     }
   }
 
@@ -89,7 +80,7 @@ export default function AppFunctional(props) {
         ))}
       </div>
       <div className="info">
-        <h3 id="message"></h3>
+        <h3 id="message">{message}</h3>
       </div>
       <div id="keypad">
         {["left", "up", "right", "down"].map((direction) => (
