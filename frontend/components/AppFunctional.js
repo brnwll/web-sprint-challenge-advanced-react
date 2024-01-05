@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 const initialMessage = "";
@@ -9,14 +9,13 @@ const endpoint = "http://localhost:9000/api/result";
 
 export default function AppFunctional(props) {
   const [bIndex, setBIndex] = useState(initialIndex);
-  const [coordinates, setCoordinates] = useState(initialIndex);
   const [steps, setSteps] = useState(initialSteps);
   const [message, setMessage] = useState(initialMessage);
   const [email, setEmail] = useState(initialEmail);
 
-  const getX = () => Math.floor(bIndex % 3) + 1;
-  const getY = () => Math.floor(bIndex / 3) + 1;
-  const getCoordinates = (index) => index || `${getX()}, ${getY()}`;
+  const getX = (index) => Math.floor((index ? index : bIndex) % 3) + 1;
+  const getY = (index) => Math.floor((index ? index : bIndex) / 3) + 1;
+  const getCoordinates = (index) => `${getX(index)}, ${getY(index)}`;
 
   function getNextIndex(direction) {
     const idx = bIndex;
@@ -48,7 +47,7 @@ export default function AppFunctional(props) {
   function onSubmit(evt) {
     evt.preventDefault();
     axios
-      .post(endpoint, { x: getX(), y: getY(), steps, email })
+      .post(endpoint, { x: getX(bIndex), y: getY(bIndex), steps, email })
       .then((res) => {
         setMessage(res.data.message);
         setEmail(initialEmail);
@@ -56,12 +55,10 @@ export default function AppFunctional(props) {
       .catch((err) => setMessage(err.response.data.message));
   }
 
-  useEffect(() => setCoordinates(getCoordinates()), [bIndex]);
-
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
-        <h3 id="coordinates">Coordinates ({coordinates})</h3>
+        <h3 id="coordinates">Coordinates ({getCoordinates(bIndex)})</h3>
         <h3 id="steps">
           You moved {steps} time{steps !== 1 && "s"}
         </h3>
