@@ -15,6 +15,12 @@ export default function AppFunctional(props) {
     return index;
   }
 
+  function getXYMessage() {
+    // It it not necessary to have a state to track the "Coordinates (2, 2)" message for the user.
+    // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
+    // returns the fully constructed string.
+  }
+
   function getNextIndex(direction) {
     const idx = getXY();
     if (direction === "left") return [0, 3, 6].includes(idx) ? idx : idx - 1;
@@ -41,6 +47,14 @@ export default function AppFunctional(props) {
     else document.querySelector("#message").innerHTML = initialMessage;
   }
 
+  function setInfoCoordinates() {
+    const idx = getXY();
+    let x = Math.floor(idx / 3) + 1;
+    let y = Math.floor(idx % 3) + 1;
+    const coordinates = document.querySelector("#coordinates");
+    coordinates.innerHTML = `Coordinates (${x}, ${y})`;
+  }
+
   function move(evt) {
     const nextIndex = getNextIndex(evt.target.id);
     const squares = document.querySelectorAll("#grid .square");
@@ -48,6 +62,7 @@ export default function AppFunctional(props) {
     else {
       setSquare(squares[getXY()], false);
       setSquare(squares[nextIndex], true);
+      setInfoCoordinates();
       setMessage();
     }
   }
