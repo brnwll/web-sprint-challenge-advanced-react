@@ -7,6 +7,7 @@ const initialSteps = 0;
 const initialIndex = 4; // the index the "B" is at
 
 export default function AppFunctional(props) {
+  const [coordinates, setCoordinates] = useState("2, 2"); // TODO: update this to the initial coordinates
   const [message, setMessage] = useState(initialMessage);
 
   function getXY() {
@@ -15,6 +16,13 @@ export default function AppFunctional(props) {
     const squares = document.querySelectorAll("#grid .square");
     squares.forEach((square, idx) => find_B(square, idx));
     return index;
+  }
+
+  function getXYMessage() {
+    const idx = getXY();
+    let x = Math.floor(idx / 3) + 1;
+    let y = Math.floor(idx % 3) + 1;
+    return `${x}, ${y}`;
   }
 
   function getNextIndex(direction) {
@@ -30,20 +38,13 @@ export default function AppFunctional(props) {
     squares.forEach((sq, idx) =>
       idx === initialIndex ? setSquare(sq, true) : setSquare(sq)
     );
+    setCoordinates(getXYMessage());
     setMessage(initialMessage);
   }
 
   function setSquare(sq, set = false) {
     sq.innerHTML = set ? "B" : "";
     set ? sq.classList.add("active") : sq.classList.remove("active");
-  }
-
-  function setInfoCoordinates() {
-    const idx = getXY();
-    let x = Math.floor(idx / 3) + 1;
-    let y = Math.floor(idx % 3) + 1;
-    const coordinates = document.querySelector("#coordinates");
-    coordinates.innerHTML = `Coordinates (${x}, ${y})`;
   }
 
   function move(evt) {
@@ -53,7 +54,7 @@ export default function AppFunctional(props) {
     else {
       setSquare(squares[getXY()], false);
       setSquare(squares[nextIndex], true);
-      setInfoCoordinates();
+      setCoordinates(getXYMessage());
       setMessage(initialMessage);
     }
   }
@@ -69,7 +70,7 @@ export default function AppFunctional(props) {
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
-        <h3 id="coordinates">Coordinates (2, 2)</h3>
+        <h3 id="coordinates">Coordinates ({coordinates})</h3>
         <h3 id="steps">You moved 0 times</h3>
       </div>
       <div id="grid">
