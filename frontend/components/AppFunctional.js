@@ -1,18 +1,21 @@
-import React from 'react'
+import React from "react";
 
 // Suggested initial states
-const initialMessage = ''
-const initialEmail = ''
-const initialSteps = 0
-const initialIndex = 4 // the index the "B" is at
+const initialMessage = "";
+const initialEmail = "";
+const initialSteps = 0;
+const initialIndex = 4; // the index the "B" is at
 
 export default function AppFunctional(props) {
   // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
   // You can delete them and build your own logic from scratch.
 
   function getXY() {
-    // It it not necessary to have a state to track the coordinates.
-    // It's enough to know what index the "B" is at, to be able to calculate them.
+    let index = -1;
+    const find_B = (sq, idx) => (index = sq.innerHTML === "B" ? idx : index);
+    const squares = document.querySelectorAll("#grid .square");
+    squares.forEach((square, idx) => find_B(square, idx));
+    return index;
   }
 
   function getXYMessage() {
@@ -34,6 +37,7 @@ export default function AppFunctional(props) {
   function move(evt) {
     // This event handler can use the helper above to obtain a new index for the "B",
     // and change any states accordingly.
+    console.log(getXY());
   }
 
   function onChange(evt) {
@@ -51,19 +55,19 @@ export default function AppFunctional(props) {
         <h3 id="steps">You moved 0 times</h3>
       </div>
       <div id="grid">
-        {
-          [0, 1, 2, 3, 4, 5, 6, 7, 8].map(idx => (
-            <div key={idx} className={`square${idx === 4 ? ' active' : ''}`}>
-              {idx === 4 ? 'B' : null}
-            </div>
-          ))
-        }
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (
+          <div key={idx} className={`square${idx === 4 ? " active" : ""}`}>
+            {idx === 4 ? "B" : null}
+          </div>
+        ))}
       </div>
       <div className="info">
         <h3 id="message"></h3>
       </div>
       <div id="keypad">
-        <button id="left">LEFT</button>
+        <button id="left" onClick={move}>
+          LEFT
+        </button>
         <button id="up">UP</button>
         <button id="right">RIGHT</button>
         <button id="down">DOWN</button>
@@ -74,5 +78,5 @@ export default function AppFunctional(props) {
         <input id="submit" type="submit"></input>
       </form>
     </div>
-  )
+  );
 }
