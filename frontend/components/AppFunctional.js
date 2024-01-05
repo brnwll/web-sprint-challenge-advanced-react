@@ -33,18 +33,29 @@ export default function AppFunctional(props) {
   }
 
   function reset() {
-    // Use this helper to reset all states to their initial values.
+    const squares = document.querySelectorAll("#grid .square");
+    squares.forEach((square, idx) => {
+      unset(square);
+      if (idx === initialIndex) set(square);
+    });
+  }
+
+  function set(square) {
+    square.innerHTML = "B";
+    square.classList.add("active");
+  }
+
+  function unset(square) {
+    square.innerHTML = "";
+    square.classList.remove("active");
   }
 
   function move(evt) {
-    // This event handler can use the helper above to obtain a new index for the "B",
-    // and change any states accordingly.
-    const currentIndex = getXY();
     const nextIndex = getNextIndex(evt.target.id);
-
     const squares = document.querySelectorAll("#grid .square");
-    squares[currentIndex].innerHTML = "";
-    squares[nextIndex].innerHTML = "B";
+    if (nextIndex === getXY()) return;
+    unset(squares[getXY()]);
+    set(squares[nextIndex]);
   }
 
   function onChange(evt) {
@@ -77,7 +88,9 @@ export default function AppFunctional(props) {
             {direction.toUpperCase()}
           </button>
         ))}
-        <button id="reset">reset</button>
+        <button id="reset" onClick={reset}>
+          reset
+        </button>
       </div>
       <form>
         <input id="email" type="email" placeholder="type email"></input>
