@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-/*
-  TEST VALIDATION CODE (for reference)
-  const { email, x, y, steps } = validated
-  const code = (((x + 1) * (y + 2)) * (steps + 1)) + email.length
-*/
-
 const initialMessage = "";
 const initialEmail = "";
 const initialSteps = 0;
@@ -49,9 +43,7 @@ export default function AppFunctional(props) {
     }
   }
 
-  function onChange(evt) {
-    setEmail(evt.target.value);
-  }
+  const onChange = (evt) => setEmail(evt.target.value);
 
   function onSubmit(evt) {
     evt.preventDefault();
@@ -64,9 +56,7 @@ export default function AppFunctional(props) {
       .catch((err) => setMessage(err.response.data.message));
   }
 
-  useEffect(() => {
-    setCoordinates(getCoordinates());
-  }, [bIndex]);
+  useEffect(() => setCoordinates(getCoordinates()), [bIndex]);
 
   return (
     <div id="wrapper" className={props.className}>
