@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+
+/*
+  TEST VALIDATION CODE (for reference)
+  const { email, x, y, steps } = validated
+  const code = (((x + 1) * (y + 2)) * (steps + 1)) + email.length
+*/
 
 const initialMessage = "";
 const initialEmail = "";
 const initialSteps = 0;
 const initialIndex = 4; // the index the "B" is at
+const endpoint = "http://localhost:9000/api/result";
 
 export default function AppFunctional(props) {
   const [bIndex, setBIndex] = useState(initialIndex);
@@ -12,23 +20,12 @@ export default function AppFunctional(props) {
   const [message, setMessage] = useState(initialMessage);
   const [email, setEmail] = useState(initialEmail);
 
-  function getXY() {
-    let index = -1;
-    const find_B = (sq, idx) => (index = sq.innerHTML === "B" ? idx : index);
-    const squares = document.querySelectorAll("#grid .square");
-    squares.forEach((square, idx) => find_B(square, idx));
-    return index;
-  }
-
-  function getCoordinates(index) {
-    const idx = index || getXY();
-    let x = Math.floor(idx / 3) + 1;
-    let y = Math.floor(idx % 3) + 1;
-    return `${x}, ${y}`;
-  }
+  const getX = () => Math.floor(bIndex % 3) + 1;
+  const getY = () => Math.floor(bIndex / 3) + 1;
+  const getCoordinates = (index) => index || `${getX()}, ${getY()}`;
 
   function getNextIndex(direction) {
-    const idx = getXY();
+    const idx = bIndex;
     if (direction === "left") return [0, 3, 6].includes(idx) ? idx : idx - 1;
     if (direction === "up") return idx < 3 ? idx : idx - 3;
     if (direction === "right") return [2, 5, 8].includes(idx) ? idx : idx + 1;
@@ -39,11 +36,12 @@ export default function AppFunctional(props) {
     setBIndex(initialIndex);
     setMessage(initialMessage);
     setSteps(initialSteps);
+    setEmail(initialEmail);
   }
 
   function move(evt) {
     const nextIndex = getNextIndex(evt.target.id);
-    if (nextIndex === getXY()) setMessage(`You can't go ${evt.target.id}`);
+    if (nextIndex === bIndex) setMessage(`You can't go ${evt.target.id}`);
     else {
       setBIndex(nextIndex);
       setSteps(steps + 1);
@@ -56,7 +54,14 @@ export default function AppFunctional(props) {
   }
 
   function onSubmit(evt) {
-    // Use a POST request to send a payload to the server.
+    evt.preventDefault();
+    axios
+      .post(endpoint, { x: getX(), y: getY(), steps, email })
+      .then((res) => {
+        setMessage(res.data.message);
+        setEmail(initialEmail);
+      })
+      .catch((err) => setMessage(err.response.data.message));
   }
 
   useEffect(() => {
@@ -67,7 +72,9 @@ export default function AppFunctional(props) {
     <div id="wrapper" className={props.className}>
       <div className="info">
         <h3 id="coordinates">Coordinates ({coordinates})</h3>
-        <h3 id="steps">You moved {steps} times</h3>
+        <h3 id="steps">
+          You moved {steps} time{steps !== 1 && "s"}
+        </h3>
       </div>
       <div id="grid">
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (
@@ -89,7 +96,7 @@ export default function AppFunctional(props) {
           reset
         </button>
       </div>
-      <form>
+      <form onSubmit={onSubmit}>
         <input
           id="email"
           type="email"
