@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-// Suggested initial states
 const initialMessage = "";
 const initialEmail = "";
 const initialSteps = 0;
 const initialIndex = 4; // the index the "B" is at
 
 export default function AppFunctional(props) {
-  const [coordinates, setCoordinates] = useState("2, 2"); // TODO: update this to the initial coordinates
+  const [bIndex, setBIndex] = useState(initialIndex);
+  const [coordinates, setCoordinates] = useState(initialIndex);
   const [message, setMessage] = useState(initialMessage);
 
   function getXY() {
@@ -18,8 +18,8 @@ export default function AppFunctional(props) {
     return index;
   }
 
-  function getXYMessage() {
-    const idx = getXY();
+  function getCoordinates(index) {
+    const idx = index || getXY();
     let x = Math.floor(idx / 3) + 1;
     let y = Math.floor(idx % 3) + 1;
     return `${x}, ${y}`;
@@ -34,27 +34,16 @@ export default function AppFunctional(props) {
   }
 
   function reset() {
-    const squares = document.querySelectorAll("#grid .square");
-    squares.forEach((sq, idx) =>
-      idx === initialIndex ? setSquare(sq, true) : setSquare(sq)
-    );
-    setCoordinates(getXYMessage());
+    setBIndex(initialIndex);
+    //setCoordinates(getXYMessage());
     setMessage(initialMessage);
-  }
-
-  function setSquare(sq, set = false) {
-    sq.innerHTML = set ? "B" : "";
-    set ? sq.classList.add("active") : sq.classList.remove("active");
   }
 
   function move(evt) {
     const nextIndex = getNextIndex(evt.target.id);
-    const squares = document.querySelectorAll("#grid .square");
     if (nextIndex === getXY()) setMessage(`You can't go ${evt.target.id}`);
     else {
-      setSquare(squares[getXY()], false);
-      setSquare(squares[nextIndex], true);
-      setCoordinates(getXYMessage());
+      setBIndex(nextIndex);
       setMessage(initialMessage);
     }
   }
@@ -67,6 +56,10 @@ export default function AppFunctional(props) {
     // Use a POST request to send a payload to the server.
   }
 
+  useEffect(() => {
+    setCoordinates(getCoordinates());
+  }, [bIndex]);
+
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
@@ -75,8 +68,8 @@ export default function AppFunctional(props) {
       </div>
       <div id="grid">
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (
-          <div key={idx} className={`square${idx === 4 ? " active" : ""}`}>
-            {idx === 4 ? "B" : null}
+          <div key={idx} className={`square${idx === bIndex ? " active" : ""}`}>
+            {idx === bIndex ? "B" : null}
           </div>
         ))}
       </div>
