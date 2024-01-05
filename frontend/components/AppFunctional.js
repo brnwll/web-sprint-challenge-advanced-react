@@ -10,6 +10,7 @@ export default function AppFunctional(props) {
   const [coordinates, setCoordinates] = useState(initialIndex);
   const [steps, setSteps] = useState(initialSteps);
   const [message, setMessage] = useState(initialMessage);
+  const [email, setEmail] = useState(initialEmail);
 
   function getXY() {
     let index = -1;
@@ -37,6 +38,7 @@ export default function AppFunctional(props) {
   function reset() {
     setBIndex(initialIndex);
     setMessage(initialMessage);
+    setSteps(initialSteps);
   }
 
   function move(evt) {
@@ -50,7 +52,7 @@ export default function AppFunctional(props) {
   }
 
   function onChange(evt) {
-    // You will need this to update the value of the input.
+    setEmail(evt.target.value);
   }
 
   function onSubmit(evt) {
@@ -88,7 +90,13 @@ export default function AppFunctional(props) {
         </button>
       </div>
       <form>
-        <input id="email" type="email" placeholder="type email"></input>
+        <input
+          id="email"
+          type="email"
+          placeholder="type email"
+          value={email}
+          onChange={onChange}
+        ></input>
         <input id="submit" type="submit"></input>
       </form>
     </div>
