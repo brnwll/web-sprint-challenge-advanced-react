@@ -15,47 +15,41 @@ export default function AppFunctional(props) {
     return index;
   }
 
-  const getNextLeft = (idx) => ([0, 3, 6].includes(idx) ? idx : idx - 1);
-  const getNextUp = (idx) => (idx < 3 ? idx : idx - 3);
-  const getNextRight = (idx) => ([2, 5, 8].includes(idx) ? idx : idx + 1);
-  const getNextDown = (idx) => (idx > 5 ? idx : idx + 3);
   function getNextIndex(direction) {
-    if (direction === "left") return getNextLeft(getXY());
-    if (direction === "up") return getNextUp(getXY());
-    if (direction === "right") return getNextRight(getXY());
-    if (direction === "down") return getNextDown(getXY());
-  }
-
-  function getXYMessage() {
-    // It it not necessary to have a state to track the "Coordinates (2, 2)" message for the user.
-    // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
-    // returns the fully constructed string.
+    const idx = getXY();
+    if (direction === "left") return [0, 3, 6].includes(idx) ? idx : idx - 1;
+    if (direction === "up") return idx < 3 ? idx : idx - 3;
+    if (direction === "right") return [2, 5, 8].includes(idx) ? idx : idx + 1;
+    if (direction === "down") return idx > 5 ? idx : idx + 3;
   }
 
   function reset() {
     const squares = document.querySelectorAll("#grid .square");
-    squares.forEach((square, idx) => {
-      unset(square);
-      if (idx === initialIndex) set(square);
-    });
+    squares.forEach((sq, idx) =>
+      idx === initialIndex ? setSquare(sq, true) : setSquare(sq)
+    );
+    setMessage();
   }
 
-  function set(square) {
-    square.innerHTML = "B";
-    square.classList.add("active");
+  function setSquare(sq, set = false) {
+    sq.innerHTML = set ? "B" : "";
+    set ? sq.classList.add("active") : sq.classList.remove("active");
   }
 
-  function unset(square) {
-    square.innerHTML = "";
-    square.classList.remove("active");
+  function setMessage(message) {
+    if (message) document.querySelector("#message").innerHTML = message;
+    else document.querySelector("#message").innerHTML = initialMessage;
   }
 
   function move(evt) {
     const nextIndex = getNextIndex(evt.target.id);
     const squares = document.querySelectorAll("#grid .square");
-    if (nextIndex === getXY()) return;
-    unset(squares[getXY()]);
-    set(squares[nextIndex]);
+    if (nextIndex === getXY()) setMessage(`You can't go ${evt.target.id}`);
+    else {
+      setSquare(squares[getXY()], false);
+      setSquare(squares[nextIndex], true);
+      setMessage();
+    }
   }
 
   function onChange(evt) {
