@@ -8,6 +8,7 @@ const initialIndex = 4; // the index the "B" is at
 export default function AppFunctional(props) {
   const [bIndex, setBIndex] = useState(initialIndex);
   const [coordinates, setCoordinates] = useState(initialIndex);
+  const [steps, setSteps] = useState(initialSteps);
   const [message, setMessage] = useState(initialMessage);
 
   function getXY() {
@@ -35,7 +36,6 @@ export default function AppFunctional(props) {
 
   function reset() {
     setBIndex(initialIndex);
-    //setCoordinates(getXYMessage());
     setMessage(initialMessage);
   }
 
@@ -44,6 +44,7 @@ export default function AppFunctional(props) {
     if (nextIndex === getXY()) setMessage(`You can't go ${evt.target.id}`);
     else {
       setBIndex(nextIndex);
+      setSteps(steps + 1);
       setMessage(initialMessage);
     }
   }
@@ -64,7 +65,7 @@ export default function AppFunctional(props) {
     <div id="wrapper" className={props.className}>
       <div className="info">
         <h3 id="coordinates">Coordinates ({coordinates})</h3>
-        <h3 id="steps">You moved 0 times</h3>
+        <h3 id="steps">You moved {steps} times</h3>
       </div>
       <div id="grid">
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (
